@@ -1,5 +1,6 @@
 import csv
 import numpy as np
+import pandas as pd
 
 
 class loader(object):
@@ -34,3 +35,12 @@ class loader(object):
                 result.append((row[2:], row[1]))
 
         return result
+
+    def pdLoadCancer(self,filename):
+        result = []
+        with open(filename, 'rb') as csvfile:
+            datareader = pd.read_csv(csvfile)
+            datareader.set_index('id')
+
+
+        return datareader
