@@ -6,8 +6,8 @@ import GraphSearch.featureTree as ft
 
 def main():
     loader = ld.loader()
-    crimeData = loader.loadCrime("communities.data.csv")
-    irisData = loader.loadIris("Iris.csv")
+    #crimeData = loader.loadCrime("communities.data.csv")
+    #irisData = loader.loadIris("Iris.csv")
     cancerData = loader.pdLoadCancer("data.csv")
 
     treeGenerator = tg.TreeGenerator()

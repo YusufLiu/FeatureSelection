@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import featureTree as ft
+import GraphSearch.featureTree as ft
 
 
 class TreeGenerator(object):
@@ -11,7 +11,7 @@ class TreeGenerator(object):
     def featureToTree(self, data):
         columns = list(data.columns.values)
         columns.remove('diagnosis')
-        columns = columns[:10]
+        columns = columns[:9]
 
         treeRoot = ft.featureTree(data=[])
         print("Tree generating")
