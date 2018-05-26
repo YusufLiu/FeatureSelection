@@ -13,6 +13,7 @@ def main():
     treeGenerator = tg.TreeGenerator()
 
     cancerTree = treeGenerator.featureToTree(cancerData)
+    print("Tree finish, BFS Start")
     featureSelect,score = cancerTree.bfs(cancerTree,cancerData)
     print(featureSelect)
     print(score)

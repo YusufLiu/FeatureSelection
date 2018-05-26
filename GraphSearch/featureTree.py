@@ -15,6 +15,7 @@ class featureTree:
     def bfs(self, graph,data):
         features = []
         score = []
+        nvisited = []
         visited, queue = set(),[]
         for i in graph.children:
             queue.append(i)
@@ -26,11 +27,17 @@ class featureTree:
                 queue.extend(vertex.children)
                 columns = vertex.data
                 columns.append('diagnosis')
-                cancerData = data[columns]
-                result = cm.LogesticRegression(cancerData) * 100
-                if(65 < result):
-                    features.append(vertex.data)
-                    score.append(result)
+                columns.sort()
+                if(columns not in nvisited):
+                    nvisited.append(columns)
+                    cancerData = data[columns]
+
+                    result = cm.LogesticRegression(cancerData) * 100
+                    if(93 < result):
+                        features.append(vertex.data)
+                        score.append(result)
+                        print('Found score' + str(result))
+                        print(vertex.data)
 
 
 
