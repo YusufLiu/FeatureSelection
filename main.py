@@ -1,6 +1,7 @@
 import loader as ld
-import irisLR
 import cancerModel as cm
+import GraphSearch.TreeGenerator as tg
+import GraphSearch.featureTree as ft
 
 
 def main():
@@ -9,14 +10,26 @@ def main():
     irisData = loader.loadIris("Iris.csv")
     cancerData = loader.pdLoadCancer("data.csv")
 
+    treeGenerator = tg.TreeGenerator()
 
-    print(len(crimeData))
-    print(len(irisData))
+    cancerTree = treeGenerator.featureToTree(cancerData)
+    featureSelect,score = cancerTree.bfs(cancerTree,cancerData)
+    print(featureSelect)
+    print(score)
 
-    result = cm.KNNeighbors(cancerData)
-    print("Using Knn with 5 neighbour, all features accuracy: "+str(result*100) + '%')
-    result = cm.LogesticRegression(cancerData)
-    print("Using Logestic Regression, all features accuracy: " + str(result * 100) + '%')
+
+    print(cancerTree.getChildren())
+
+
+
+
+
+
+
+    # result = cm.KNNeighbors(cancerData)
+    # print("Using Knn with 5 neighbour, all features accuracy: "+str(result*100) + '%')
+    # result = cm.LogesticRegression(cancerData)
+    # print("Using Logestic Regression, all features accuracy: " + str(result * 100) + '%')
 
 
 
