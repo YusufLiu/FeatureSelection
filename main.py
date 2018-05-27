@@ -11,8 +11,8 @@ def main():
     cancerData = loader.pdLoadCancer("data.csv")
 
     treeGenerator = tg.TreeGenerator()
-
-    cancerTree = treeGenerator.featureToTree(cancerData)
+    #for i in range(20):
+    cancerTree = treeGenerator.featureToTree(cancerData,0)
     print("Tree finish, BFS Start")
     featureSelect,score = cancerTree.bfs(cancerTree,cancerData)
     print(featureSelect)

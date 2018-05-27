@@ -33,11 +33,11 @@ class featureTree:
                     cancerData = data[columns]
 
                     result = cm.LogesticRegression(cancerData) * 100
-                    if(93 < result):
+                    if(97 < result):
                         features.append(vertex.data)
                         score.append(result)
-                        print('Found score' + str(result))
-                        print(vertex.data)
+                        #print('Found score' + str(result))
+                        #print(vertex.data)
 
 
 

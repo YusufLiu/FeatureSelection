@@ -8,10 +8,11 @@ class TreeGenerator(object):
     def __init__(self):
         pass
 
-    def featureToTree(self, data):
+    def featureToTree(self, data,startIndex):
         columns = list(data.columns.values)
-        columns.remove('diagnosis')
-        #columns = columns[:10]
+        columns.remove('diagnosis') #Computing all 30 features require large memory and time
+        #columns = columns[startIndex:startIndex+10] #you can compute only 10 per time, and swap
+
 
         treeRoot = ft.featureTree(data=[])
         print("Tree generating")
