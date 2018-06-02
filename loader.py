@@ -40,7 +40,7 @@ class loader(object):
         result = []
         with open(filename, 'rb') as csvfile:
             datareader = pd.read_csv(csvfile)
-            datareader.set_index('id')
+            #datareader.set_index('id')
 
 
         return datareader

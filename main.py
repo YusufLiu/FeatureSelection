@@ -13,17 +13,16 @@ def main():
     # crimeData = loader.loadCrime("communities.data.csv")
     # irisData = loader.loadIris("Iris.csv")
     cancerData = loader.pdLoadCancer("data.csv")
-    shortLength = 9
+    shortLength = 30
     T = math.ceil(math.sqrt(shortLength))
-    shortCancerData = cancerData.ix[:100, :shortLength+2]
+    shortCancerData = cancerData.ix[:100, 1:shortLength+2]
 
     shortTermMemory = np.zeros(shortLength)
     longTermMemory = 0
     bestSol = []
-    featureSetIndex = np.zeros(shortLength)
+    featureSetIndex = np.ones(shortLength)
 
     # set of features
-    print
 
     ret = False
     maxCounter = math.pow(2, shortLength)
@@ -35,14 +34,15 @@ def main():
         for ind, obj in enumerate(featureSetIndex):
             nFeatureSetIndex = featureSetIndex[:]
             nFeatureSetIndex[ind] = (obj != 1)
-            features = [0, 1]
-            for i, obj in enumerate(nFeatureSetIndex):
-                if obj:
-                    features.append(i+2)
+            if sum(nFeatureSetIndex) != 0:
+                features = [0]
+                for i, obj in enumerate(nFeatureSetIndex):
+                    if obj:
+                        features.append(i+1)
 
-            newSCD = shortCancerData.iloc[:,features]
-            result = cm.LogesticRegression(newSCD)
-            allResults.append((result, ind))
+                newSCD = shortCancerData.iloc[:,features]
+                result = cm.LogesticRegression(newSCD)
+                allResults.append((result, ind))
 
         allResults.sort(reverse=True)
         for index, var in enumerate(allResults):
@@ -74,6 +74,13 @@ def main():
     print "Accuracy long term "
     print longTermMemory
 
+
+    shortFeaturesName = list(shortCancerData.columns.values)
+    selectFeaturesName = []
+    for ind, obj in enumerate(featureSetIndex):
+        if obj:
+            selectFeaturesName.append(shortFeaturesName[ind+1])
+    print selectFeaturesName
 
 
 
