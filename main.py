@@ -1,11 +1,11 @@
 import loader as ld
-import numpy as np
-import math
 import pandas
 import gc
+import math
 import cancerModel as cm
 import GraphSearch.TreeGenerator as tg
 import GraphSearch.featureTree as ft
+import TabuSearch.tabuSearch as tbs
 
 
 def main():
@@ -13,74 +13,15 @@ def main():
     # crimeData = loader.loadCrime("communities.data.csv")
     # irisData = loader.loadIris("Iris.csv")
     cancerData = loader.pdLoadCancer("data.csv")
-    shortLength = 30
+
+    shortLength = 20
     T = math.ceil(math.sqrt(shortLength))
-    shortCancerData = cancerData.ix[:100, 1:shortLength+2]
-
-    shortTermMemory = np.zeros(shortLength)
-    longTermMemory = 0
-    bestSol = []
-    featureSetIndex = np.ones(shortLength)
-
-    # set of features
-
-    ret = False
-    maxCounter = math.pow(2, shortLength)
-    counter = 0
-    while not ret and counter < maxCounter:
-        allResults = []
-        print "currentFeatureSet"
-        print featureSetIndex
-        for ind, obj in enumerate(featureSetIndex):
-            nFeatureSetIndex = featureSetIndex[:]
-            nFeatureSetIndex[ind] = (obj != 1)
-            if sum(nFeatureSetIndex) != 0:
-                features = [0]
-                for i, obj in enumerate(nFeatureSetIndex):
-                    if obj:
-                        features.append(i+1)
-
-                newSCD = shortCancerData.iloc[:,features]
-                result = cm.LogesticRegression(newSCD)
-                allResults.append((result, ind))
-
-        allResults.sort(reverse=True)
-        for index, var in enumerate(allResults):
-            featureRes = var[0]
-            featureIndex = var[1]
-            if not shortTermMemory[featureIndex]:
-                featureSetIndex[featureIndex] = (featureSetIndex[featureIndex] != 1)
-                shortTermMemory[:] = [x - 1 if x != 0 else x for x in shortTermMemory]
-                shortTermMemory[featureIndex] = T
-                longTermMemory = featureRes if featureRes > longTermMemory else longTermMemory
-                bestSol = featureSetIndex if featureRes > longTermMemory else featureSetIndex
-                ret = False
-                break
-            elif featureRes > longTermMemory:
-                featureSetIndex[featureIndex] = (featureSetIndex[featureIndex] != 1)
-                shortTermMemory[:] = [x - 1 if x != 0 else x for x in shortTermMemory]
-                shortTermMemory[featureIndex] = T
-                bestSol = featureSetIndex
-                ret = False
-            elif index == (len(allResults) - 1):
-                ret = True
-
-        counter += 1
-
-    print "best features"
-    print bestSol
-    print "last features"
-    print featureSetIndex
-    print "Accuracy long term "
-    print longTermMemory
+    shortCancerData = cancerData.iloc[:, 1:12]
+    tbsModel = tbs.TabuSearch(shortCancerData, t=7, limit=10)
+    tbsModel.startSearch()
+    print tbsModel.result
 
 
-    shortFeaturesName = list(shortCancerData.columns.values)
-    selectFeaturesName = []
-    for ind, obj in enumerate(featureSetIndex):
-        if obj:
-            selectFeaturesName.append(shortFeaturesName[ind+1])
-    print selectFeaturesName
 
 
 
