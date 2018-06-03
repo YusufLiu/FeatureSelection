@@ -8,12 +8,13 @@ import gc
 
 class TabuSearch:
 
-    def __init__(self, data, size=None, t=None, limit=None):
+    def __init__(self, data, size=None, t=None, limit=None, silent=True):
         self.data = data    # data to be analyzed with column 0 being the predictor column
         self.size = size    # the total number of features to be selected
         self.t = t          # taboo variable t, denoting how many turns with an action be forbidden
         self.limit = limit  # limits the maximum amount of features to be selected (thus limiting search space)
         self.result = None
+        self.silent = silent
         if not size:        # Default size: number of columns in the dataframe without the predictor column
             self.size = len(data.columns) - 1
         if not t:           # Default t: the square root of the size
@@ -50,6 +51,8 @@ class TabuSearch:
         ret = False
         maxCounter = math.pow(2, size)
         counter = 0
+        featureRes = None
+        featureIndex = None
 
         print "Started Tabu Search with data size: %d,  t: %d and limit: %d ... " % (size, t, limit if limit else -1)
 
@@ -88,7 +91,8 @@ class TabuSearch:
                     ret = False
                 elif index == (len(featureSetIndex) - 1):
                     ret = True
-            print "Calculation round %d complete. CBA: %s; CA %s" % (counter, longTermMemory, featureRes)
+            if not self.silent:
+                print "Calculation round %d complete. CBA: %s; CA %s" % (counter, longTermMemory, featureRes if featureRes else "NaN")
 
             gc.collect()
             counter += 1

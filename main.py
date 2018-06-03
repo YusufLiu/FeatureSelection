@@ -16,8 +16,8 @@ def main():
 
     shortLength = 20
     T = math.ceil(math.sqrt(shortLength))
-    shortCancerData = cancerData.iloc[:, 1:12]
-    tbsModel = tbs.TabuSearch(shortCancerData, t=7, limit=10)
+    shortCancerData = cancerData.ix[:, 1:]
+    tbsModel = tbs.TabuSearch(shortCancerData, t=7, limit=7, silent=False)
     tbsModel.startSearch()
     print tbsModel.result
 
