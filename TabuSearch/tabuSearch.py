@@ -63,8 +63,8 @@ class TabuSearch:
                 nFeatureSetIndex[ind] = (obj != 1)
                 if sum(nFeatureSetIndex) != 0 and (sum(nFeatureSetIndex) < limit if limit else True):
                     features = [0]
-                    for i, obj in enumerate(nFeatureSetIndex):
-                        if obj:
+                    for i, obj1 in enumerate(nFeatureSetIndex):
+                        if obj1:
                             features.append(i + 1)
 
                     newSCD = shortCancerData.iloc[:, features]
