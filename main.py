@@ -16,10 +16,12 @@ def main():
 
     shortLength = 20
     T = math.ceil(math.sqrt(shortLength))
-    shortCancerData = cancerData.ix[:, 1:]
-    tbsModel = tbs.TabuSearch(shortCancerData, t=7, limit=7, silent=False)
-    tbsModel.startSearch()
-    print tbsModel.result
+    featureSet = [1]
+    for i in range(2,20):
+        shortCancerData = cancerData.ix[:, [1,i,i+1,i+2,i+3,i+4,i+5,i+6,i+7]]
+        tbsModel = tbs.TabuSearch(shortCancerData, t=7, limit=10, silent=True)
+        tbsModel.startSearch()
+        print tbsModel.result
 
 
 
