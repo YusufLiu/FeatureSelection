@@ -3,6 +3,7 @@ import pandas
 import numpy as np
 import math
 import gc
+import copy
 
 
 
@@ -59,7 +60,7 @@ class TabuSearch:
         while not ret and counter < maxCounter:
             allResults = []
             for ind, obj in enumerate(featureSetIndex):
-                nFeatureSetIndex = featureSetIndex[:]
+                nFeatureSetIndex = copy.deepcopy(featureSetIndex)
                 nFeatureSetIndex[ind] = (obj != 1)
                 if sum(nFeatureSetIndex) != 0 and (sum(nFeatureSetIndex) < limit if limit else True):
                     features = [0]
@@ -83,7 +84,7 @@ class TabuSearch:
                     bestSol = featureSetIndex if featureRes > longTermMemory else featureSetIndex
                     ret = False
                     break
-                elif featureRes > longTermMemory:
+                elif featureRes >= longTermMemory:
                     featureSetIndex[featureIndex] = (featureSetIndex[featureIndex] != 1)
                     shortTermMemory[:] = [x - 1 if x != 0 else x for x in shortTermMemory]
                     shortTermMemory[featureIndex] = t
@@ -93,6 +94,12 @@ class TabuSearch:
                     ret = True
             if not self.silent:
                 print "Calculation round %d complete. CBA: %s; CA %s" % (counter, longTermMemory, featureRes if featureRes else "NaN")
+                shortFeaturesName = list(shortCancerData.columns.values)
+                selectedFeaturesName = []
+                for ind, obj in enumerate(featureSetIndex):
+                    if obj:
+                        selectedFeaturesName.append(shortFeaturesName[ind + 1])
+                print selectedFeaturesName
 
             gc.collect()
             counter += 1
