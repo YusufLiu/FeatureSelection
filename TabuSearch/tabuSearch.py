@@ -3,7 +3,7 @@ import pandas
 import numpy as np
 import math
 import gc
-
+import copy
 
 
 class TabuSearch:
@@ -59,7 +59,7 @@ class TabuSearch:
         while not ret and counter < maxCounter:
             allResults = []
             for ind, obj in enumerate(featureSetIndex):
-                nFeatureSetIndex = featureSetIndex[:]
+                nFeatureSetIndex = copy.deepcopy(featureSetIndex)
                 nFeatureSetIndex[ind] = (obj != 1)
                 if sum(nFeatureSetIndex) != 0 and (sum(nFeatureSetIndex) < limit if limit else True):
                     features = [0]
