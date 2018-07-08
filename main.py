@@ -22,7 +22,7 @@ def main():
     # saModel.startSearch()
     # print saModel.result
 
-    acoModel = aco.ACO(cancerData,maxIteration=100,antNumber=10,cc=1,Q=0.02,e=0.5)
+    acoModel = aco.ACO(cancerData,maxIteration=100,antNumber=100,cc=1,Q=0.02,e=0.9)
     result = acoModel.simulate()
     print(result)
 

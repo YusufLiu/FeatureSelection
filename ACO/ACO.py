@@ -26,16 +26,23 @@ class ACO:
         featureSetIndex = []
         for j in range(self.size):
             decision = random.random()
-            if (decision < self.fp[j] / 2):
+            if (decision < self.fp[j] / 2.0):
                 featureSetIndex.append(1)
             else:
                 featureSetIndex.append(0)
-
-        features = [0]
+        #print(self.data.columns)
+        #print(len(featureSetIndex))
+        features = []
         for i, obj in enumerate(featureSetIndex):
-            if obj:
-                features.append(i + 1)
+            if i == 1:
+                features.append(1)
+            elif i == 0:
+                features.append(0)
+            elif obj:
+                features.append(i)
+        #print(features)
         newdata = self.data.iloc[:, features]
+        #print(newdata.columns)
         score = float(cm.LogesticRegression(newdata))
         ant.val = score
         ant.subsets = featureSetIndex
@@ -45,14 +52,15 @@ class ACO:
         maxScore = 0
         maxSet = []
         for a in self.ants:
-            if(maxScore < a.score):
-                maxScore = a.score
+            if(maxScore < a.val):
+                maxScore = a.val
                 maxSet = a.subsets
 
         if(self.bestScore < maxScore):
             self.bestScore = maxScore
             self.result = maxSet
 
+        print(maxScore)
         return maxSet
 
     def UpdatePheromones(self,best):
