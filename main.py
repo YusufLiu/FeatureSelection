@@ -6,6 +6,7 @@ import cancerModel as cm
 import GraphSearch.TreeGenerator as tg
 import GraphSearch.featureTree as ft
 import SimulatedAnnealing.simAnnealing as sa
+import ACO.ACO as aco
 
 
 def main():
@@ -14,12 +15,16 @@ def main():
     # irisData = loader.loadIris("Iris.csv")
     cancerData = loader.pdLoadCancer("data.csv")
 
-    shortLength = 20
-    T = math.ceil(math.sqrt(shortLength))
-    shortCancerData = cancerData.ix[:, 1:]
-    saModel = sa.SimAnnealing(shortCancerData, limit=7, silent=False)
-    saModel.startSearch()
-    print saModel.result
+    # shortLength = 20
+    # T = math.ceil(math.sqrt(shortLength))
+    # shortCancerData = cancerData.ix[:, 1:]
+    # saModel = sa.SimAnnealing(shortCancerData, limit=7, silent=False)
+    # saModel.startSearch()
+    # print saModel.result
+
+    acoModel = aco.ACO(cancerData,maxIteration=100,antNumber=10,cc=1,Q=0.02,e=0.5)
+    result = acoModel.simulate()
+    print(result)
 
 
 
