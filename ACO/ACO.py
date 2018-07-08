@@ -10,10 +10,10 @@ class ACO:
 
     def __init__(self,data,maxIteration,antNumber,cc,Q,e):
         self.data = data
-        self.fp = [cc]*len(data.columns)
+        self.fp = [cc]*(len(data.columns)-1)
         self.maxIteration = maxIteration
         self.ants = []
-        self.size = len(data.columns)
+        self.size = len(data.columns)-1
         self.antNumber= antNumber
         self.Q = Q
         self.bestScore = 0
@@ -26,37 +26,32 @@ class ACO:
         featureSetIndex = []
         for j in range(self.size):
             decision = random.random()
-            if (decision < self.fp[j] / 2.0):
+            if decision < self.fp[j] / 2.0:
                 featureSetIndex.append(1)
             else:
                 featureSetIndex.append(0)
-        #print(self.data.columns)
-        #print(len(featureSetIndex))
-        features = []
+        features = [0]
         for i, obj in enumerate(featureSetIndex):
-            if i == 1:
-                features.append(1)
-            elif i == 0:
-                features.append(0)
-            elif obj:
-                features.append(i)
-        #print(features)
+            if obj:
+                features.append(i+1)
         newdata = self.data.iloc[:, features]
-        #print(newdata.columns)
-        score = float(cm.LogesticRegression(newdata))
+        if sum(featureSetIndex) == 0:
+            score = 0.5
+        else:
+            score = float(cm.LogesticRegression(newdata))
         ant.val = score
-        ant.subsets = featureSetIndex
+        ant.subsets = copy.deepcopy(featureSetIndex)
         return ant
 
     def ApplyLocalSearch(self):
         maxScore = 0
         maxSet = []
         for a in self.ants:
-            if(maxScore < a.val):
+            if maxScore < a.val or (maxScore == a.val and (maxSet and sum(a.subsets) < sum(maxSet))):
                 maxScore = a.val
                 maxSet = a.subsets
 
-        if(self.bestScore < maxScore):
+        if self.bestScore <= maxScore or (maxScore == self.bestScore and (self.result and sum(maxSet) < sum(self.result))):
             self.bestScore = maxScore
             self.result = maxSet
 
@@ -69,7 +64,6 @@ class ACO:
             if v == 1:
                 self.fp[i] = self.fp[i] + self.Q
 
-
     def simulate(self):
         for s in range(self.maxIteration):
             for i in range(self.antNumber):
@@ -80,7 +74,13 @@ class ACO:
             self.UpdatePheromones(bestSet)
             self.ants = []
 
-        return [self.bestScore,self.result]
+        shortFeaturesName = list(self.data.columns.values)
+        bestFeatureName = []
+        for ind, obj in enumerate(self.result):
+            if obj:
+                bestFeatureName.append(shortFeaturesName[ind + 1])
+
+        return ["Best", bestFeatureName, self.bestScore]
 
 
 class Ant:

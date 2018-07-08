@@ -17,12 +17,12 @@ def main():
 
     # shortLength = 20
     # T = math.ceil(math.sqrt(shortLength))
-    # shortCancerData = cancerData.ix[:, 1:]
+    shortCancerData = cancerData.ix[:, 1:]
     # saModel = sa.SimAnnealing(shortCancerData, limit=7, silent=False)
     # saModel.startSearch()
     # print saModel.result
 
-    acoModel = aco.ACO(cancerData,maxIteration=100,antNumber=100,cc=1,Q=0.02,e=0.9)
+    acoModel = aco.ACO(shortCancerData,maxIteration=20,antNumber=100,cc=1,Q=0.1,e=0.95)
     result = acoModel.simulate()
     print(result)
 
