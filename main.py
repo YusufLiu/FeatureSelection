@@ -6,7 +6,11 @@ import cancerModel as cm
 import GraphSearch.TreeGenerator as tg
 import GraphSearch.featureTree as ft
 import SimulatedAnnealing.simAnnealing as sa
+
+import GeneticAlgorithm.geneticAlgorithm as ga
+
 import ACO.ACO as aco
+
 
 
 def main():
@@ -18,6 +22,11 @@ def main():
     # shortLength = 20
     # T = math.ceil(math.sqrt(shortLength))
     shortCancerData = cancerData.ix[:, 1:]
+
+    gaModel = ga.GeneticAlgorithm(shortCancerData, popSize=200, maxGeneration=100, limit=5, silent=False)
+    gaModel.startSearch()
+    print gaModel.result
+
     # saModel = sa.SimAnnealing(shortCancerData, limit=7, silent=False)
     # saModel.startSearch()
     # print saModel.result
@@ -25,6 +34,7 @@ def main():
     acoModel = aco.ACO(shortCancerData,maxIteration=20,antNumber=100,cc=1,Q=0.1,e=0.95)
     result = acoModel.simulate()
     print(result)
+
 
 
 
