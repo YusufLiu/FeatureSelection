@@ -5,6 +5,8 @@ import numpy as np
 import math
 import gc
 import copy
+import ACO.ACO as aco
+
 
 
 
@@ -30,23 +32,20 @@ class SaWAco:
         if not limit:
             self.limit = self.size
 
-    # randomly select k features out of n choices to be the starting features
-    # return an array of selected features with 1 representing selected features 0 for non-selected
-    def randomStart(self, n=None, k=None):
-        if not n:
-            n = self.size
-        if not k:
-            k = self.limit
 
-        featureSet = np.zeros(n)
-        featureSet[:k] = 1
-        np.random.shuffle(featureSet)
-        return featureSet
+    def randomPheromone(self, q, stepSize=0.1):
+        return q * (1-stepSize + random.random()*stepSize*2)
 
-    # uniformly randomly return an integer 0 to k-1
-    def randomFlip(self, k):
-        ind = random.randint(0, k-1)
-        return ind
+    def runHeuristic(self, type, paramTuned):
+        if not type:
+            return None;
+        if type == "ACO":
+            if not paramTuned:
+                paramTuned = 0.1
+            Q = paramTuned
+            acoModel = aco.ACO(self.data, maxIteration=20, antNumber=50, cc=1, Q=Q, e=0.95)
+            score, featureSet, quality = acoModel.run()
+            return score, featureSet, quality
 
 
     # main search algorithm
@@ -59,37 +58,26 @@ class SaWAco:
 
         shortCancerData = data
         currentScore = 0
-        featureSetIndex = self.randomStart()
+        featureSetIndex = []
         bestSolScore = currentScore
-        bestSolSet = featureSetIndex[:]
+        bestSolSet = []
+        Q = 0.15
 
-        featureSize = len(featureSetIndex)
 
         # set termination conditions
         maxCounter = math.pow(2, size)
         counter = 0
-        iterSize = 100
+        iterSize = 1
         print "Started Simulated Annealing with data size: %d,  t: %.2f and limit: %d ... " % (size, currentTemp, self.limit)
 
         while counter < maxCounter and currentTemp > endTemp:
             for ind in range(iterSize):
-                # select the index of a random feature to include or exclude
-                k = self.randomFlip(featureSize)
-                featureSetIndex[k] = (featureSetIndex[k] != 1)
+                oldPheromone = Q
+                # generate a new pheromone that each ant may carry
+                Q = self.randomPheromone(Q, stepSize=currentTemp*2)
+                # get the score of such specify of ant colony
+                score, featureSetIndex, colonyQuality = self.runHeuristic(type="ACO", paramTuned=Q)
 
-                # if the result makes the set contain zero features, pick again
-                while sum(featureSetIndex) == 0:
-                    featureSetIndex[k] = (featureSetIndex[k] != 1)
-                    k = self.randomFlip(featureSize)
-                    featureSetIndex[k] = (featureSetIndex[k] != 1)
-
-                # use the indice to construct the model and run evaluation function
-                features = [0]
-                for i, obj in enumerate(featureSetIndex):
-                    if obj:
-                        features.append(i + 1)
-                newSCD = shortCancerData.iloc[:, features]
-                score = float(cm.LogesticRegression(newSCD))
 
                 # OPTIONAL: record down the best result set. This is not part of the SA algorithm.
                 if score > bestSolScore:
@@ -97,29 +85,30 @@ class SaWAco:
                     bestSolSet = copy.deepcopy(featureSetIndex)
 
                 # Perform score evaluation according to the current T
-                if score > currentScore:
-                    currentScore = score
+                if colonyQuality > currentScore:
+                    currentScore = colonyQuality
                 else:
                     x = random.random()
-                    acceptanceX = math.exp((currentScore-score)/currentTemp)
+                    acceptanceX = math.exp((currentScore-colonyQuality)/currentTemp)
                     if x < acceptanceX:
-                        currentScore = score
+                        currentScore = colonyQuality
                     else:
-                        featureSetIndex[k] = (featureSetIndex[k] != 1)
+                        Q = oldPheromone
 
             currentTemp = currentTemp*alpha
-            iterSize = int(math.ceil(iterSize / alpha))
+            #iterSize = int(math.ceil(iterSize / alpha))
 
 
             if not self.silent:
-                print "Calculation round %.6f complete. CBA: %.6f; CA %.6f" % (currentTemp, bestSolScore, currentScore)
-                shortFeaturesName = list(shortCancerData.columns.values)
-                selectedFeaturesName = []
-                for ind, obj in enumerate(bestSolSet):
-                    if obj:
-                        selectedFeaturesName.append(shortFeaturesName[ind + 1])
-                print "Features Selected: ",
-                print selectedFeaturesName
+                print "Calculation round %.6f complete. CBA: %.6f; CQ %.6f" % (currentTemp, bestSolScore, currentScore)
+                print "Current Pheromone level %.6f" % oldPheromone
+                # shortFeaturesName = list(shortCancerData.columns.values)
+                # selectedFeaturesName = []
+                # for ind, obj in enumerate(bestSolSet):
+                #     if obj:
+                #         selectedFeaturesName.append(shortFeaturesName[ind + 1])
+                # print "Features Selected: ",
+                # print selectedFeaturesName
 
             gc.collect()
             counter += 1
@@ -137,5 +126,5 @@ class SaWAco:
             if obj:
                 bestFeatureName.append(shortFeaturesName[ind + 1])
 
-        self.result = [("Current", selectedFeaturesName, currentScore), ("Best", bestFeatureName, bestSolScore)]
+        self.result = [bestSolScore, bestFeatureName]
         return self.result
