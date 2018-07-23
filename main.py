@@ -10,6 +10,7 @@ import SimulatedAnnealing.simAnnealing as sa
 import GeneticAlgorithm.geneticAlgorithm as ga
 
 import ACO.ACO as aco
+import SaWAco.saWAco as sawaco
 
 
 
@@ -23,17 +24,21 @@ def main():
     # T = math.ceil(math.sqrt(shortLength))
     shortCancerData = cancerData.ix[:, 1:]
 
-    gaModel = ga.GeneticAlgorithm(shortCancerData, popSize=200, maxGeneration=100, limit=5, silent=False)
-    gaModel.startSearch()
-    print gaModel.result
+    # gaModel = ga.GeneticAlgorithm(shortCancerData, popSize=200, maxGeneration=100, limit=5, silent=False)
+    # gaModel.startSearch()
+    # print gaModel.result
 
     # saModel = sa.SimAnnealing(shortCancerData, limit=7, silent=False)
     # saModel.startSearch()
     # print saModel.result
 
-    acoModel = aco.ACO(shortCancerData,maxIteration=20,antNumber=100,cc=1,Q=0.1,e=0.95)
-    result = acoModel.simulate()
-    print(result)
+    sawacoModel = sawaco.SaWAco(shortCancerData, limit=7, silent=False)
+    sawacoModel.startSearch()
+    print sawacoModel.result
+
+    # acoModel = aco.ACO(shortCancerData,maxIteration=100,antNumber=100,cc=1,Q=0.1,e=0.95)
+    # result = acoModel.simulate()
+    # print(result)
 
 
 

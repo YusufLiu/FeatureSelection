@@ -19,6 +19,8 @@ class ACO:
         self.bestScore = 0
         self.result=[]
         self.evaporate = e
+        self.colonyMax = 0
+        self.colonyQuality = 0
 
 
 
@@ -55,14 +57,16 @@ class ACO:
             self.bestScore = maxScore
             self.result = maxSet
 
-        print(maxScore)
-        return maxSet
+        #print(maxScore)
+        self.colonyMax += maxScore
+        return maxSet, maxScore
 
-    def UpdatePheromones(self,best):
-        for i,v in enumerate(best):
+    def UpdatePheromones(self,bestSet, bestScore):
+        for i,v in enumerate(bestSet):
             self.fp[i] = self.fp[i]*self.evaporate
             if v == 1:
-                self.fp[i] = self.fp[i] + self.Q
+                weight = (bestScore-0.5)*2
+                self.fp[i] = self.fp[i] + self.Q*weight
 
     def simulate(self):
         for s in range(self.maxIteration):
@@ -70,8 +74,8 @@ class ACO:
                 ant = Ant()
                 ant = self.constructSolution(ant)
                 self.ants.append(ant)
-            bestSet = self.ApplyLocalSearch()
-            self.UpdatePheromones(bestSet)
+            bestSet, bestScore = self.ApplyLocalSearch()
+            self.UpdatePheromones(bestSet, bestScore)
             self.ants = []
 
         shortFeaturesName = list(self.data.columns.values)
@@ -82,6 +86,24 @@ class ACO:
 
         return ["Best", bestFeatureName, self.bestScore]
 
+    def run(self):
+        for s in range(self.maxIteration):
+            for i in range(self.antNumber):
+                ant = Ant()
+                ant = self.constructSolution(ant)
+                self.ants.append(ant)
+            bestSet, bestScore = self.ApplyLocalSearch()
+            self.UpdatePheromones(bestSet, bestScore)
+            self.ants = []
+
+        shortFeaturesName = list(self.data.columns.values)
+        bestFeatureName = []
+        for ind, obj in enumerate(self.result):
+            if obj:
+                bestFeatureName.append(shortFeaturesName[ind + 1])
+
+        self.colonyQuality = self.colonyMax / self.maxIteration # the overall ant colony quality over iterations
+        return self.bestScore, self.result, self.colonyQuality
 
 class Ant:
     def __init__(self):
