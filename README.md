@@ -21,6 +21,7 @@ Communities and Crime:
 http://archive.ics.uci.edu/ml/datasets/Communities+and+Crime
 ## How to use:
 install python
+
 run main.py
 ## Project Contributors:
 YuCheng Liu, 
